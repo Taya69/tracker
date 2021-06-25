@@ -1,0 +1,27 @@
+<div>
+    <mat-form-field class="full-width" appearance="outline">
+      <mat-label>Name</mat-label>
+      <input       
+        matInput
+        placeholder="Name of task" required 
+        [(ngModel)]='name'           
+      />
+      <mat-error>
+          Name is required
+        </mat-error>
+    </mat-form-field>
+  </div>
+  <div>
+    <mat-form-field class="full-width" appearance="outline">
+      <mat-label>Description</mat-label>
+      <input       
+        matInput
+        placeholder="Description" required 
+        [(ngModel)]='description'           
+      />
+      <mat-error>
+          Description is required
+        </mat-error>
+    </mat-form-field>
+  </div>
+  <button mat-button (click)='save()'>Save</button>

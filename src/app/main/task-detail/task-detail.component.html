@@ -1,0 +1,14 @@
+<button (click)="goBack()" mat-button>go back</button>
+<div *ngIf="task" class="container">
+    
+      <h2>Details</h2>        
+      <form class="example-form">
+        <mat-form-field class="example-full-width">
+          <mat-label>Task title: </mat-label>
+          <input matInput placeholder="name" id="post-title" name="first">
+        </mat-form-field>   
+      </form>
+      <button mat-button (click)="save()">save</button>
+    </div>
+   
+
