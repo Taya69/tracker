@@ -24,6 +24,18 @@ export class FortasksService {
       catchError(this.handleError<Task>('addPost'))
     );    
   }
+  // addTask(task : Task, image? : File) : Observable<Task>{
+  //   const fd = new FormData() 
+  //   if (image) {
+  //     fd.append('image', image, image.name)
+  //   } 
+  //   fd.append('name', task.name);
+  //   fd.append('description', task.description),
+  //   fd.append('priority', task.priority!)    
+  //   return this.http.post<Task>('api/tasks', fd, this.httpOptions).pipe(         
+  //     catchError(this.handleError<Task>('addPost'))
+  //   );    
+  // }
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {     
       console.error(error); 
@@ -54,9 +66,21 @@ export class FortasksService {
       catchError(this.handleError<Task>('deleteTask'))
     );
   }
-  updateTask(task: {}, id: string): Observable<any> {
-    console.log(id, task)
-    return this.http.patch(`api/tasks/${id}`, task, this.httpOptions)
+  updateTask(task: any, id: string, image? : File): Observable<any> {
+    const fd = new FormData() 
+      if (image) {
+        fd.append('image', image, image.name)
+      }
+      for (let key of Object.keys(task)) {
+        fd.append(key, task[key])
+      } 
+      // fd.append('name', task.name);
+      // fd.append('description', task.description),
+      // fd.append('priority', task.priority!)    
+      return this.http.patch(`api/tasks/${id}`, task, this.httpOptions).pipe(         
+        catchError(this.handleError<Task>('addingPost'))
+      );    
+    
   }
   getTaskById(id: string): Observable<Task> {
     const url = `api/tasks/${id}`;
@@ -66,6 +90,9 @@ export class FortasksService {
   } 
   getTasksByPriorities(priority: string): Observable<Task[]> {
     return this.http.get<Task[]>(`api/tasks?priority=${priority}`);
+  }
+  addFile(uploadFormData : FormData) {    
+   return this.http.post('api/tasks/upload', uploadFormData)    
   }
  
 }

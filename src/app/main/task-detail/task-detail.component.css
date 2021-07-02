@@ -1,0 +1,13 @@
+.name {
+    background-color: lightblue;
+}
+
+.order {
+    justify-self: start;
+    justify-content: start;
+    align-self: start;
+}
+
+.dn {
+    display: none;
+}

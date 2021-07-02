@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { FortasksService } from 'src/app/for-tasks.service';
@@ -9,8 +9,12 @@ import { FortasksService } from 'src/app/for-tasks.service';
   templateUrl: './task-detail.component.html',
   styleUrls: ['./task-detail.component.css']
 })
-export class TaskDetailComponent implements OnInit {  
+export class TaskDetailComponent implements OnInit { 
+  @ViewChild('inputForFile')
+  inputForFileRef!: ElementRef;
   task: any
+  file!: File;
+  imagePreview: any
   constructor(
     private route: ActivatedRoute,
     private taskService: FortasksService,
@@ -23,8 +27,7 @@ export class TaskDetailComponent implements OnInit {
   getTask(): void {
     const id = String(this.route.snapshot.paramMap.get('id'));
     this.taskService.getTaskById(id)
-      .subscribe(task => {this.task = task});
-    
+      .subscribe(task => {this.task = task; this.imagePreview = task.imgSrc});    
   }
   goBack(): void {
     this.location.back();
@@ -34,7 +37,21 @@ export class TaskDetailComponent implements OnInit {
      
     }
   }
- 
-
+  triggerOfUpload() {
+    this.inputForFileRef.nativeElement.click()
+  } 
+  onFileUpload (event : any) {
+    const file = event.target.files[0];
+    this.file = file;
+    // const reader = new FileReader()
+    // reader.onload = () => {
+    //   this.imagePreview = reader.result
+    // }
+    // reader.readAsDataURL(file);
+    const uploadFormData = new FormData();
+    uploadFormData.append('file', this.file, this.file.name);    
+    this.taskService.addFile(uploadFormData).subscribe((data) => console.log(data))
+  } 
+    
 }
 

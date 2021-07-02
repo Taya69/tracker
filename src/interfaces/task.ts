@@ -9,6 +9,6 @@ export interface Task {
     // fileSrc?: string,
     // order?: Number,
     priority?: string,
-    
+    imgSrc? : string
         
   }

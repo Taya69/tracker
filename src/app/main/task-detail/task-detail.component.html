@@ -1,14 +1,44 @@
 <button (click)="goBack()" mat-button>go back</button>
-<div *ngIf="task" class="container">
+<mat-grid-list cols="5" rowHeight="100px">
+  <mat-grid-tile class="name"      
+      colspan=3
+      rowspan="2"
+      >
+      <div class="order">1</div>
+      <div>8888888888</div>    
+  </mat-grid-tile>
+  <mat-grid-tile  class="dateOfCreation"    
+      colspan=1
+      rowspan="2"
+      >
+    date of create
+  </mat-grid-tile>
+  <mat-grid-tile  class="dateOfDeadline"    
+      colspan=1
+      rowspan="2"
+      >
+    date of deadline
+  </mat-grid-tile>
+  <mat-grid-tile  class="description"    
+      colspan=5
+      rowspan="2"
+      >
     
-      <h2>Details</h2>        
-      <form class="example-form">
-        <mat-form-field class="example-full-width">
-          <mat-label>Task title: </mat-label>
-          <input matInput placeholder="name" id="post-title" name="first">
-        </mat-form-field>   
-      </form>
-      <button mat-button (click)="save()">save</button>
-    </div>
-   
+  </mat-grid-tile>
+  <mat-grid-tile  class="img"
+  colspan=5
+  rowspan="2">   
+   <input type="file" class="dn" #inputForFile (change)='onFileUpload($event)'/>  
+   <button mat-button (click)='triggerOfUpload()'>Upload image</button>
+   <img [src]='imagePreview' *ngIf='imagePreview' />
+  </mat-grid-tile>
+</mat-grid-list>
+
+<form action="/upload" method="POST" enctype="multipart/form-data">
+  <input type="file" class="dn" #inputForFile name="image"  (change)='onFileUpload($event)'/>  
+  <button mat-button (click)='triggerOfUpload()'>Upload image</button>
+  <img [src]='imagePreview' *ngIf='imagePreview' />
+  <button type="submit" class="btn">Submit</button>
+</form> 
+
 

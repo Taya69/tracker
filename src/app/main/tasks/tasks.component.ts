@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Inject, OnInit } from '@angular/core';
+import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
@@ -17,7 +17,11 @@ import { Task } from 'src/interfaces/task';
 export class TasksComponent implements OnInit { 
   
   constructor(private taskService: FortasksService, public dialog: MatDialog) { } 
-
+  @ViewChild('inputForFile')
+  inputForFileRef!: ElementRef;
+  task: any
+  file!: File;
+  imagePreview: any
   priorities: Priority[] = [];  
   low: Task[] = []
   medium: Task[] = []
@@ -78,7 +82,7 @@ export class TasksComponent implements OnInit {
     }).subscribe((data) => {this.currentArr.push(data)})
   }
   setPriority (priority : string) {
-    console.log(priority)
+  //  console.log(priority)
     this.priority = priority;
     
     if (this.priority === 'low') {
@@ -104,8 +108,23 @@ export class TasksComponent implements OnInit {
       })
   }
   nothing () {
-    
+
   }
+  triggerOfUpload() {
+    this.inputForFileRef.nativeElement.click()
+  } 
+  onFileUpload (event : any) {    
+    const file = event.target.files[0];
+    this.file = file;
+    const reader = new FileReader()
+    reader.onload = () => {
+      this.imagePreview = reader.result
+    }
+    reader.readAsDataURL(file);
+    const uploadFormData = new FormData();    
+    uploadFormData.append('image', this.file, this.file.name);    
+    this.taskService.addFile(uploadFormData).subscribe((data) => console.log(data))
+  } 
  
 }
 
