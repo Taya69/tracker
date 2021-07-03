@@ -4,11 +4,10 @@ export interface Task {
     _id?: string;
     name: string;
     description: string,
-    // dateOfCreate?: Date;
-    // dateDeadline? : Date,
-    // fileSrc?: string,
-    // order?: Number,
+    dateOfCreate?: Date;
+    dateDeadline? : Date,    
+    order?: Number,
     priority?: string,
-    imgSrc? : string
+    file? : [String]
         
   }

@@ -9,6 +9,7 @@ import { Task } from 'src/interfaces/task';
 
 
 
+
 @Component({
   selector: 'app-tasks',
   templateUrl: './tasks.component.html',
@@ -28,6 +29,7 @@ export class TasksComponent implements OnInit {
   high: Task[] = []
   priority: string = ''
   currentArr: any
+  currentTask: any
   
    
   ngOnInit() {    
@@ -37,13 +39,12 @@ export class TasksComponent implements OnInit {
   }
   drop(event: CdkDragDrop<Task[]>) {
     if (event.previousContainer !== event.container) {
-     // console.log(event.previousContainer.data, event.container.data)
+    
       transferArrayItem(event.previousContainer.data, event.container.data,
         event.previousIndex, event.currentIndex)
         const currentPriority = this.getPriorityByDropElement(event.container.element.nativeElement.id)
         //const previosPriority = Object(event.container.data[event.currentIndex])['priority'] 
-        const idTask = Object(event.container.data[event.currentIndex])['_id'] 
-        console.log(event.container.element.nativeElement.id)
+        const idTask = Object(event.container.data[event.currentIndex])['_id']         
         this.taskService.updateTask({priority : currentPriority}, idTask).subscribe()  
     } else {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
@@ -71,18 +72,18 @@ export class TasksComponent implements OnInit {
     description: "sss",
     dateOfCreate: new Date(),    
   }
-   this.taskService.addTask(task).subscribe((data)=> {console.log(data)})
+   this.taskService.addTask(task).subscribe()
   }
   save (properties: string[]) {
    
     this.taskService.addTask({
       name: properties[0],
       description: properties[1],
-      priority: this.priority
+      priority: this.priority,
+      dateOfCreate: new Date()
     }).subscribe((data) => {this.currentArr.push(data)})
   }
-  setPriority (priority : string) {
-  //  console.log(priority)
+  setPriority (priority : string) {  
     this.priority = priority;
     
     if (this.priority === 'low') {
@@ -97,12 +98,13 @@ export class TasksComponent implements OnInit {
     
   }
   confirmOfdelete(task: Task) {
+    this.currentTask = task
     const DialogRef = this.dialog.open(ConfimationDialog, {      
       data: task._id
-    });
+    });    
     DialogRef.afterClosed().subscribe((el) => {
       if (el === 'delete') {
-        let index = this.currentArr.indexOf(task) 
+        let index = this.currentArr.indexOf(this.currentTask) 
         this.currentArr.splice(index, 1);
       }
       })
@@ -110,21 +112,7 @@ export class TasksComponent implements OnInit {
   nothing () {
 
   }
-  triggerOfUpload() {
-    this.inputForFileRef.nativeElement.click()
-  } 
-  onFileUpload (event : any) {    
-    const file = event.target.files[0];
-    this.file = file;
-    const reader = new FileReader()
-    reader.onload = () => {
-      this.imagePreview = reader.result
-    }
-    reader.readAsDataURL(file);
-    const uploadFormData = new FormData();    
-    uploadFormData.append('image', this.file, this.file.name);    
-    this.taskService.addFile(uploadFormData).subscribe((data) => console.log(data))
-  } 
+ 
  
 }
 
@@ -141,8 +129,7 @@ closeDialog () {
   this.dialogRef2.close("notDelete")
 }
 
-delete(): void {  
-  console.log(this.data)
+delete(): void {   
   this.taskService.deleteTask(this.data).subscribe();
   this.dialogRef2.close("delete")
 }

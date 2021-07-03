@@ -1,44 +1,75 @@
 <button (click)="goBack()" mat-button>go back</button>
-<mat-grid-list cols="5" rowHeight="100px">
+<mat-grid-list cols="5" rowHeight="100px" *ngIf='task'>
   <mat-grid-tile class="name"      
       colspan=3
       rowspan="2"
       >
-      <div class="order">1</div>
-      <div>8888888888</div>    
+      <mat-form-field class="full-width" appearance="outline">
+        <mat-label>Name</mat-label>
+        <input       
+          matInput
+          placeholder="Name of task" required 
+          [(ngModel)]='name'           
+        />
+        <mat-error>
+            Name is required
+          </mat-error>
+      </mat-form-field>   
   </mat-grid-tile>
   <mat-grid-tile  class="dateOfCreation"    
       colspan=1
       rowspan="2"
       >
-    date of create
+      <div>{{task.dateOfCreate}}</div>   
   </mat-grid-tile>
   <mat-grid-tile  class="dateOfDeadline"    
       colspan=1
       rowspan="2"
       >
-    date of deadline
+      <mat-form-field appearance="fill">
+        <mat-label>Input & change events</mat-label>
+        <input matInput [matDatepicker]="picker" [(ngModel)]='dateOfDeadLine'
+               (dateInput)="addEvent($event)" (dateChange)="addEvent($event)">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>     
   </mat-grid-tile>
   <mat-grid-tile  class="description"    
       colspan=5
       rowspan="2"
       >
-    
+      <mat-form-field class="full-width" appearance="outline">
+        <mat-label>Description</mat-label>
+        <input       
+          matInput
+          placeholder="Description of task" required 
+          [(ngModel)]='description'           
+        />
+        <mat-error>
+            Name is required
+          </mat-error>
+      </mat-form-field>       
   </mat-grid-tile>
-  <mat-grid-tile  class="img"
+  <mat-grid-tile  class="file"
   colspan=5
   rowspan="2">   
-   <input type="file" class="dn" #inputForFile (change)='onFileUpload($event)'/>  
-   <button mat-button (click)='triggerOfUpload()'>Upload image</button>
-   <img [src]='imagePreview' *ngIf='imagePreview' />
+  <button *ngFor='let file of files'>{{file}}</button>
+  </mat-grid-tile>
+  <mat-grid-tile>    
+    <mat-form-field appearance="fill">
+      <mat-label>Autosize textarea</mat-label>
+      <textarea matInput
+                cdkTextareaAutosize
+                #autosize="cdkTextareaAutosize"
+                cdkAutosizeMinRows="5"
+                cdkAutosizeMaxRows="20"></textarea>
+    </mat-form-field>
   </mat-grid-tile>
 </mat-grid-list>
-
-<form action="/upload" method="POST" enctype="multipart/form-data">
   <input type="file" class="dn" #inputForFile name="image"  (change)='onFileUpload($event)'/>  
   <button mat-button (click)='triggerOfUpload()'>Upload image</button>
-  <img [src]='imagePreview' *ngIf='imagePreview' />
-  <button type="submit" class="btn">Submit</button>
-</form> 
+  <img [src]='imagePreview' *ngIf='imagePreview'/>
+  <button type="submit" class="btn" (click)='submitOfUpload()'>Submit</button>
+<button mat-button (click)='saveChange()'>Save</button>
 
 

@@ -66,14 +66,14 @@ export class FortasksService {
       catchError(this.handleError<Task>('deleteTask'))
     );
   }
-  updateTask(task: any, id: string, image? : File): Observable<any> {
-    const fd = new FormData() 
-      if (image) {
-        fd.append('image', image, image.name)
-      }
-      for (let key of Object.keys(task)) {
-        fd.append(key, task[key])
-      } 
+  updateTask(task: {}, id: string, files = false): Observable<any> {
+    // const fd = new FormData() 
+    //   if (image) {
+    //     fd.append('image', image, image.name)
+    //   }
+    //   for (let key of Object.keys(task)) {
+    //     fd.append(key, task[key])
+    //   } 
       // fd.append('name', task.name);
       // fd.append('description', task.description),
       // fd.append('priority', task.priority!)    
