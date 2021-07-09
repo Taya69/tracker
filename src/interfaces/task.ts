@@ -6,7 +6,7 @@ export interface Task {
     description: string,
     dateOfCreate?: Date;
     dateDeadline? : Date,    
-    order?: Number,
+    order: Number,
     priority?: string,
     file? : [String]
         

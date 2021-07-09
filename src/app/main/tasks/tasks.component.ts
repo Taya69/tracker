@@ -8,9 +8,11 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dial
 import { Task } from 'src/interfaces/task';
 
 interface ColumnsForTasks {
-  priority: Priority;
-  array: Task[];
-  showTask: boolean     
+  priority: Priority,
+  array: Task[],
+  showTask: boolean,
+  orders: String[],
+  selectOrder: String     
 }
 
 
@@ -38,21 +40,39 @@ export class TasksComponent implements OnInit {
   priority: string = ''
   currentArr: any
   currentTask: any
-  sorts: String[] = ['by order', 'by name'];
-  selected: string = 'by order'  
-  columns: ColumnsForTasks[] = []
-    
-   test () {
-     console.log(88888)
+  sorts: String[] = ['by order', 'by name'];   
+  columns: ColumnsForTasks[] = []  
+  selectedOrder = 'by order';
+   test (event: any, column: ColumnsForTasks) {       
+       column.array.sort(function(a,b){
+        if (event.target.value === 'by name'){
+          if (a.name > b.name) {
+            return 1;
+          }
+          if (a.name < b.name) {
+            return -1;
+          }          
+          return 0;
+        } else {
+          if (a.order > b.order) {
+            return 1;
+          }
+          if (a.order < b.order) {
+            return -1;
+          }          
+          return 0;
+        }
+      
+       })
+     
+
    }
    ngOnInit() { 
     this.taskService.getPriorities().subscribe((data) => {this.priorities = data;
     
-    for (let i = 0; i < this.priorities.length; i++) {
-      //console.log(this.priorities[i].name)
-      this.taskService.getTasksByPriorities(this.priorities[i].name, 'by order').subscribe((data)=> {
-       // console.log(data)
-        this.columns.push({priority: this.priorities[i], array: data, showTask : false})
+    for (let i = 0; i < this.priorities.length; i++) {      
+      this.taskService.getTasksByPriorities(this.priorities[i].name, 'by order').subscribe((data)=> {       
+        this.columns.push({priority: this.priorities[i], array: data, showTask : false, orders: this.sorts, selectOrder: 'by order'})
         this.columns.sort(function(a, b) {      
           if (a.priority.order > b.priority.order) {
             return 1;
@@ -72,7 +92,7 @@ export class TasksComponent implements OnInit {
     DialogRef.afterClosed().subscribe((el) => {    
       this.taskService.addPriority({name: el, custom: true, order: 3}).subscribe((data)=> {
         this.priorities.push(data);
-        this.columns.push({priority: data, array: [], showTask: false})
+        this.columns.push({priority: data, array: [], showTask: false, orders: this.sorts, selectOrder: 'by order'})
       })
       })
 

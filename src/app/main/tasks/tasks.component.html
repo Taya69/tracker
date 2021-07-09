@@ -4,13 +4,13 @@
   (click)='setPriority(column.priority.name)'>
     <div class="headerOfBox">
       <h2>{{column.priority.name}}</h2>
-      <mat-form-field appearance="fill" (change)='test()'>
-        <!-- <mat-label (change)='test()'>Select an option</mat-label> -->
-        <mat-select [(value)]="selected" (change)='test()'>          
-          <mat-option value="option1" (change)='test()'>by order</mat-option>
-          <mat-option value="option2">by name</mat-option>          
-        </mat-select>
-      </mat-form-field>  
+      <mat-form-field appearance="fill">
+        <mat-label>Sort by</mat-label>
+        <select matNativeControl (change)="test($event, column)">          
+          <option *ngFor="let option of column.orders" [value]="option"
+                  [selected]="selectedOrder === option">{{ option }}</option>
+        </select>
+      </mat-form-field>
     </div>  
     <div   
     cdkDropList
