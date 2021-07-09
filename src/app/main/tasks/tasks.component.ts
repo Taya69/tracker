@@ -1,4 +1,4 @@
-import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Inject, NgZone, OnInit, ViewChild } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
@@ -7,7 +7,11 @@ import { Priority } from 'src/interfaces/priority';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Task } from 'src/interfaces/task';
 
-
+interface ColumnsForTasks {
+  priority: Priority;
+  array: Task[];
+  showTask: boolean     
+}
 
 
 @Component({
@@ -17,7 +21,8 @@ import { Task } from 'src/interfaces/task';
 })
 export class TasksComponent implements OnInit { 
   
-  constructor(private taskService: FortasksService, public dialog: MatDialog) { } 
+  constructor(private taskService: FortasksService, public dialog: MatDialog, private cdr: ChangeDetectorRef,
+    private zone:NgZone) { } 
   @ViewChild('inputForFile')
   inputForFileRef!: ElementRef;
   task: any
@@ -27,36 +32,63 @@ export class TasksComponent implements OnInit {
   low: Task[] = []
   medium: Task[] = []
   high: Task[] = []
+  customArray: Task[] = []
+  customPriority: string = ''  
+  testArray: Task[] = []
   priority: string = ''
   currentArr: any
   currentTask: any
-  
+  sorts: String[] = ['by order', 'by name'];
+  selected: string = 'by order'  
+  columns: ColumnsForTasks[] = []
+    
+   test () {
+     console.log(88888)
+   }
+   ngOnInit() { 
+    this.taskService.getPriorities().subscribe((data) => {this.priorities = data;
+    
+    for (let i = 0; i < this.priorities.length; i++) {
+      //console.log(this.priorities[i].name)
+      this.taskService.getTasksByPriorities(this.priorities[i].name, 'by order').subscribe((data)=> {
+       // console.log(data)
+        this.columns.push({priority: this.priorities[i], array: data, showTask : false})
+        this.columns.sort(function(a, b) {      
+          if (a.priority.order > b.priority.order) {
+            return 1;
+          }
+          if (a.priority.order < b.priority.order) {
+            return -1;
+          }          
+          return 0;
+        });        
+      })       
+    } 
+  })
    
-  ngOnInit() {    
-    this.taskService.getTasksByPriorities('low').subscribe((data)=> this.low = data)
-    this.taskService.getTasksByPriorities('medium').subscribe((data)=> this.medium= data)
-    this.taskService.getTasksByPriorities('high').subscribe((data)=> this.high = data)    
+  }
+  addColumn () {    
+    const DialogRef = this.dialog.open(AddingOfColumn);    
+    DialogRef.afterClosed().subscribe((el) => {    
+      this.taskService.addPriority({name: el, custom: true, order: 3}).subscribe((data)=> {
+        this.priorities.push(data);
+        this.columns.push({priority: data, array: [], showTask: false})
+      })
+      })
+
+    this.taskService.getTasksByPriorities(this.customPriority, 'by order').subscribe()
   }
   drop(event: CdkDragDrop<Task[]>) {
-    if (event.previousContainer !== event.container) {
-    
+    if (event.previousContainer !== event.container) { 
       transferArrayItem(event.previousContainer.data, event.container.data,
-        event.previousIndex, event.currentIndex)
-        const currentPriority = this.getPriorityByDropElement(event.container.element.nativeElement.id)
-        //const previosPriority = Object(event.container.data[event.currentIndex])['priority'] 
-        const idTask = Object(event.container.data[event.currentIndex])['_id']         
-        this.taskService.updateTask({priority : currentPriority}, idTask).subscribe()  
-    } else {
+        event.previousIndex, event.currentIndex)    
+        const idTask = Object(event.container.data[event.currentIndex])['_id']            
+        this.taskService.updateTask({priority : event.container.element.nativeElement.id}, idTask).subscribe()           
+        }          
+    else {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     }
-  }
-  getPriorityByDropElement(dropElement : string) : string {
-    let priority = '';
-    if (dropElement === 'cdk-drop-list-0') {priority = 'low'}
-    if (dropElement === 'cdk-drop-list-1') {priority = 'medium'}
-    if (dropElement === 'cdk-drop-list-2') {priority = 'high'}
-    return priority
-  }   
+} 
   email = new FormControl('', [Validators.required, Validators.email]);
 
   getErrorMessage() {
@@ -66,36 +98,29 @@ export class TasksComponent implements OnInit {
 
     return this.email.hasError('email') ? 'Not a valid email' : '';
   }
-  addTask() {
-  let task = {
-    name: "qqq",
-    description: "sss",
-    dateOfCreate: new Date(),    
-  }
-   this.taskService.addTask(task).subscribe()
-  }
-  save (properties: string[]) {
+  
+  save (properties: any[]) {
    
-    this.taskService.addTask({
+    this.taskService.addTask({      
       name: properties[0],
-      description: properties[1],
+      description: properties[1], 
+      order: properties[3],
+      dateDeadline: properties[2],     
       priority: this.priority,
       dateOfCreate: new Date()
     }).subscribe((data) => {this.currentArr.push(data)})
   }
-  setPriority (priority : string) {  
-    this.priority = priority;
-    
-    if (this.priority === 'low') {
-      this.currentArr = this.low
-    }
-    if (this.priority === 'medium') {
-      this.currentArr = this.medium
-    }
-    if (this.priority === 'high') {
-      this.currentArr = this.high      
-    }
-    
+  setPriority (priority : string) { 
+  //  console.log(this.columns, priority) 
+    this.priority = priority; 
+    //  this.currentArr = this.columns.find((el)=> {el.priority === this.priority})?.array;   
+    let arr: any = []
+    for (let i = 0; i < this.columns.length; i++) {
+      if (this.columns[i].priority.name === priority) {
+        arr = this.columns[i].array
+      }
+    }  
+    this.currentArr = arr;    
   }
   confirmOfdelete(task: Task) {
     this.currentTask = task
@@ -108,12 +133,7 @@ export class TasksComponent implements OnInit {
         this.currentArr.splice(index, 1);
       }
       })
-  }
-  nothing () {
-
-  }
- 
- 
+  } 
 }
 
 @Component({
@@ -132,6 +152,21 @@ closeDialog () {
 delete(): void {   
   this.taskService.deleteTask(this.data).subscribe();
   this.dialogRef2.close("delete")
+}
+}
+
+@Component({
+  selector: 'adding-column',
+  templateUrl: "tasksAddColumn.component.html",
+  styleUrls: ['./tasks.component.css']
+})
+export class AddingOfColumn {
+nameOfColumn: string = ''  
+constructor (@Inject(MAT_DIALOG_DATA) public data: string, public dialogRef3: MatDialogRef<ConfimationDialog>,
+private taskService: FortasksService) {}
+closeDialog () {
+ // this.taskService.addPriority({name: this.nameOfColumn, custom: true, order: 3}).subscribe()
+  this.dialogRef3.close(this.nameOfColumn)
 }
 }
 
