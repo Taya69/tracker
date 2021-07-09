@@ -1,75 +1,116 @@
 <button (click)="goBack()" mat-button>go back</button>
 <mat-grid-list cols="5" rowHeight="100px" *ngIf='task'>
-  <mat-grid-tile class="name"      
-      colspan=3
-      rowspan="2"
+  <mat-grid-tile class="priority"      
+      colspan='3'
+      rowspan="1"
       >
-      <mat-form-field class="full-width" appearance="outline">
+      <mat-form-field class="full-width" appearance="outline" class='width100'>
+        <mat-label>Priority</mat-label>
+        <textarea  
+         cdkTextareaAutosize
+                #autosize="cdkTextareaAutosize"
+                cdkAutosizeMinRows="5"
+                cdkAutosizeMaxRows="20"     
+          matInput
+          placeholder="Priority of task" required 
+          [(ngModel)]='priority'           
+        ></textarea>
+        <mat-error>
+            Name is required
+          </mat-error>
+      </mat-form-field>   
+  </mat-grid-tile>
+  <mat-grid-tile  class="dateOfDeadline"    
+  colspan=2
+  rowspan="1"
+  >
+  <mat-form-field appearance="outline" class='width100'>
+    <mat-label>Deadline</mat-label>
+    <input matInput [matDatepicker]="picker" [(ngModel)]='dateOfDeadLine'
+           (dateInput)="addEvent($event)" (dateChange)="addEvent($event)">
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>     
+</mat-grid-tile>
+<mat-grid-tile class="order"      
+colspan=1
+rowspan="1"
+>
+<mat-form-field class="full-width" appearance="outline" class='width100'>
+  <mat-label>Order</mat-label>
+  <textarea  
+   cdkTextareaAutosize
+          #autosize="cdkTextareaAutosize"
+          cdkAutosizeMinRows="5"
+          cdkAutosizeMaxRows="20"     
+    matInput
+    placeholder="Order of task" required 
+    [(ngModel)]='order'           
+  ></textarea>
+  <mat-error>
+      Order is required
+    </mat-error>
+</mat-form-field>   
+</mat-grid-tile>
+  <mat-grid-tile class="name"      
+      colspan=2
+      rowspan="1"
+      >
+      <mat-form-field class="full-width" appearance="outline" class='width100'>
         <mat-label>Name</mat-label>
-        <input       
+        <textarea  
+         cdkTextareaAutosize
+                #autosize="cdkTextareaAutosize"
+                cdkAutosizeMinRows="2"
+                cdkAutosizeMaxRows="20"     
           matInput
           placeholder="Name of task" required 
           [(ngModel)]='name'           
-        />
+        ></textarea>
         <mat-error>
             Name is required
           </mat-error>
       </mat-form-field>   
   </mat-grid-tile>
   <mat-grid-tile  class="dateOfCreation"    
-      colspan=1
-      rowspan="2"
+      colspan=2
+      rowspan="1"
       >
-      <div>{{task.dateOfCreate}}</div>   
-  </mat-grid-tile>
-  <mat-grid-tile  class="dateOfDeadline"    
-      colspan=1
-      rowspan="2"
-      >
-      <mat-form-field appearance="fill">
-        <mat-label>Input & change events</mat-label>
-        <input matInput [matDatepicker]="picker" [(ngModel)]='dateOfDeadLine'
-               (dateInput)="addEvent($event)" (dateChange)="addEvent($event)">
-        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-datepicker #picker></mat-datepicker>
-      </mat-form-field>     
-  </mat-grid-tile>
+      <mat-form-field appearance="outline" class='width100'>
+        <mat-label>Date of creation</mat-label>
+        <input matInput [value]='task.dateOfCreate | date'>    
+      </mat-form-field>    
+  </mat-grid-tile> 
   <mat-grid-tile  class="description"    
       colspan=5
-      rowspan="2"
-      >
-      <mat-form-field class="full-width" appearance="outline">
-        <mat-label>Description</mat-label>
-        <input       
+      rowspan="3"
+      > 
+      <div>    
+        <textarea  
+         cdkTextareaAutosize
+                #autosize="cdkTextareaAutosize"
+              
+                cdkAutosizeMaxRows="20"     
           matInput
           placeholder="Description of task" required 
           [(ngModel)]='description'           
-        />
-        <mat-error>
-            Name is required
-          </mat-error>
-      </mat-form-field>       
+        ></textarea>
+      </div>     
   </mat-grid-tile>
   <mat-grid-tile  class="file"
   colspan=5
-  rowspan="2">   
+  rowspan="1"> 
+  <div class="containerForFiles">  
   <button *ngFor='let file of files'>{{file}}</button>
-  </mat-grid-tile>
-  <mat-grid-tile>    
-    <mat-form-field appearance="fill">
-      <mat-label>Autosize textarea</mat-label>
-      <textarea matInput
-                cdkTextareaAutosize
-                #autosize="cdkTextareaAutosize"
-                cdkAutosizeMinRows="5"
-                cdkAutosizeMaxRows="20"></textarea>
-    </mat-form-field>
-  </mat-grid-tile>
-</mat-grid-list>
-  <input type="file" class="dn" #inputForFile name="image"  (change)='onFileUpload($event)'/>  
-  <button mat-button (click)='triggerOfUpload()'>Upload image</button>
-  <img [src]='imagePreview' *ngIf='imagePreview'/>
-  <button type="submit" class="btn" (click)='submitOfUpload()'>Submit</button>
-<button mat-button (click)='saveChange()'>Save</button>
+  <div>
+    <input type="file" class="dn" #inputForFile name="image"  (change)='onFileUpload($event)'/>  
+    <button mat-button (click)='triggerOfUpload()'>Upload image</button>
+    <img [src]='imagePreview' *ngIf='imagePreview'/>
+    <button type="submit" class="btn" (click)='submitOfUpload()'>Submit</button>
+  </div>
+</div>
+  </mat-grid-tile> 
+</mat-grid-list> 
+<button mat-button (click)='saveChange()' class="save">Save</button>
 
 

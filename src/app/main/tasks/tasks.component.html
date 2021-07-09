@@ -1,80 +1,40 @@
-<div cdkDropListGroup>
-  <div class="example-container"
-    (click)='setPriority("low")'>
-   <h2>Still Doing</h2>
-  
-   <div
-   
-   cdkDropList
-   [cdkDropListData]="low"
-   class="example-list"
-   (cdkDropListDropped)="drop($event)">
-   <div class="example-box" *ngFor="let item of low" cdkDrag routerLink = "{{item._id}}">      
-      {{item.name}}  {{item._id}}   
-     <label [matMenuTriggerFor]="menu" class="material-icons" (click)='$event.stopPropagation()'>pending</label>
-<mat-menu #menu="matMenu">
-  <button mat-menu-item routerLink = "{{item._id}}">Edit</button>
-  <button mat-menu-item (click)='setPriority("low"); confirmOfdelete(item)'>Delete</button>
-</mat-menu>    
-    </div>
-   </div>
-<label for="mycheckbox1" class="feedback-label">Add task1</label>
-<input type="checkbox" id="mycheckbox1">
-<form class="form" action="">
-  <app-newtask (onSave)='save($event)'
-  ></app-newtask> 
-</form>
-   
-
-</div>    
-  <div class="example-container"
-      (click)='setPriority("medium")'>
-      <h2>Still Doing</h2>  
+<button mat-button (click)='addColumn()'>Add column</button>
+<div cdkDropListGroup> 
+  <div class="example-container" *ngFor='let column of columns'
+  (click)='setPriority(column.priority.name)'>
+    <div class="headerOfBox">
+      <h2>{{column.priority.name}}</h2>
+      <mat-form-field appearance="fill" (change)='test()'>
+        <!-- <mat-label (change)='test()'>Select an option</mat-label> -->
+        <mat-select [(value)]="selected" (change)='test()'>          
+          <mat-option value="option1" (change)='test()'>by order</mat-option>
+          <mat-option value="option2">by name</mat-option>          
+        </mat-select>
+      </mat-form-field>  
+    </div>  
     <div   
-      cdkDropList
-      [cdkDropListData]="medium"
-      class="example-list"
-      (cdkDropListDropped)="drop($event)">
-        <div class="example-box" *ngFor="let item of medium" cdkDrag routerLink = "{{item._id}}">      
-          {{item.name}}  {{item._id}}   
-          <label [matMenuTriggerFor]="menu" class="material-icons" (click)='$event.stopPropagation()'>pending</label>
-          <mat-menu #menu="matMenu">
-            <button mat-menu-item routerLink = "{{item._id}}">Edit</button>
-            <button mat-menu-item (click)='setPriority("medium"); confirmOfdelete(item)'>Delete</button>
-          </mat-menu>    
-        </div>
-      </div>
-      <label for="mycheckbox2" class="feedback-label">Add task1</label>
-      <input type="checkbox" id="mycheckbox2">
-      <form class="form" action="">
-        <app-newtask (onSave)='save($event)'
-        ></app-newtask> 
-      </form>
-  </div>
-  <div class="example-container"
-  (click)='setPriority("high")'>
-  <h2>Still Doing</h2>  
-<div   
-  cdkDropList
-  [cdkDropListData]="high"
-  class="example-list"
-  (cdkDropListDropped)="drop($event)">
-    <div class="example-box" *ngFor="let item of high" cdkDrag routerLink = "{{item._id}}">      
-      {{item.name}}  {{item._id}}   
-      <label [matMenuTriggerFor]="menu" class="material-icons" (click)='$event.stopPropagation()'>pending</label>
-      <mat-menu #menu="matMenu">
-        <button mat-menu-item routerLink = "{{item._id}}">Edit</button>
-        <button mat-menu-item (click)='setPriority("high"); confirmOfdelete(item)'>Delete</button>
-      </mat-menu>    
+    cdkDropList
+    [cdkDropListData]="column.array"
+    class="example-list"
+    [id]='column.priority.name'    
+    (cdkDropListDropped)="drop($event)">
+    <div class="example-box" *ngFor="let item of column.array" cdkDrag routerLink = "{{item._id}}">      
+    <div>{{item.name}}</div>
+    <div>{{item.dateDeadline | date}}</div>
+    <div>{{item.order}}</div>      
+    <label [matMenuTriggerFor]="menu" class="material-icons" (click)='$event.stopPropagation()'>more_vert</label>
+    <mat-menu #menu="matMenu">
+    <button mat-menu-item routerLink = "{{item._id}}">Edit</button>
+    <button mat-menu-item (click)='setPriority(column.priority.name); confirmOfdelete(item)'>Delete</button>
+    </mat-menu>    
     </div>
-  </div>
-  <label for="mycheckbox3" class="feedback-label">Add task1</label>
-  <input type="checkbox" id="mycheckbox3">
-  <form class="form" action="">
-    <app-newtask (onSave)='save($event)'
+    </div>
+    <button mat-button (click)='column.showTask = !column.showTask'>Add task</button>  
+    <form class="form" action="" [ngClass]="{showTaskClass: column.showTask}">
+     <app-newtask (onSave)="save($event); column.showTask = !column.showTask"
     ></app-newtask> 
-  </form>
-</div>    
-  </div> 
+    </form>
+  </div>      
+</div> 
   
   

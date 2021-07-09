@@ -19,7 +19,7 @@ import { VerificationComponent } from './login/login-layout/verification/verific
 import { RegistrationComponent } from './login/login-layout/registration/registration.component';
 import { RestoreOfPasswordComponent } from './login/login-layout/restore-of-password/restore-of-password.component';
 import { LayoutsMainComponent } from './main/layouts/layouts.component';
-import { ConfimationDialog, TasksComponent } from './main/tasks/tasks.component';
+import { AddingOfColumn, ConfimationDialog, TasksComponent } from './main/tasks/tasks.component';
 import { OneOfTaskComponent } from './main/one-of-task/one-of-task.component';
 import { NewtaskComponent } from './main/tasks/newtask/newtask.component';
 import { TaskDetailComponent } from './main/task-detail/task-detail.component';
@@ -40,7 +40,8 @@ import { TaskDetailComponent } from './main/task-detail/task-detail.component';
    OneOfTaskComponent,
    NewtaskComponent,
    ConfimationDialog,
-   TaskDetailComponent
+   TaskDetailComponent,
+   AddingOfColumn
   ],
   imports: [
     BrowserModule,

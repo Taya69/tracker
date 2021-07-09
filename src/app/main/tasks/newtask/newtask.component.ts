@@ -1,4 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 
 @Component({
   selector: 'app-newtask',
@@ -7,7 +8,7 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 })
 export class NewtaskComponent implements OnInit {
   @Output() onSave = new EventEmitter<any>();   
-
+  
   // Push a search term into the observable stream.
   
   constructor() { }
@@ -18,7 +19,10 @@ export class NewtaskComponent implements OnInit {
   ngOnInit(): void {
   }
   save() {
-    console.log(this.name)
+    //console.log(this.name)
     this.onSave.emit([this.name, this.description, this.dateDeadline, this.order])
+  }
+  addEvent(event: MatDatepickerInputEvent<Date>) {    
+    this.dateDeadline = event.value!    
   }
 }

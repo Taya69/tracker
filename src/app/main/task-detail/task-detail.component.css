@@ -1,13 +1,42 @@
 .name {
-    background-color: lightblue;
+    background-color: rgb(192, 224, 235);
 }
-
+.description {
+    background-color: rgb(191, 230, 194);
+    align-self: flex-start;
+}
 .order {
-    justify-self: start;
-    justify-content: start;
-    align-self: start;
+    background-color: rgb(216, 228, 166);
+}
+.dateOfCreation {
+    background-color: rgb(241, 179, 231);
+}
+.dateOfDeadline {
+    background-color: rgb(240, 181, 158);
+}
+.priority {
+    background-color: rgb(235, 155, 185);
+}
+.file {
+    background-color: rgb(202, 230, 238);
+}
+.containerForFiles {
+    display: flex;
+    justify-content: space-between;
+}
+.save {
+    display: flex;
+    justify-content: center;
 }
 
 .dn {
     display: none;
+}
+.width100 {
+    width: 100%;
+    border: 0;
+    height: 100%;
+}
+textarea {
+    height: 100%;   
 }

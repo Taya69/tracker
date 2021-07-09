@@ -1,13 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { from, Observable, of } from 'rxjs';
 import { catchError, find, map, tap } from 'rxjs/operators';
 import { Task } from 'src/interfaces/task';
 import { Priority } from 'src/interfaces/priority';
 
-//const postUrl = 'http://localhost:3000/posts';
-//const postUrl = 'https://jsonplaceholder.typicode.com/posts'
-//const commentsUrl = 'https://jsonplaceholder.typicode.com/comments'
 @Injectable({
   providedIn: 'root'
 })
@@ -76,11 +73,19 @@ export class FortasksService {
     //   } 
       // fd.append('name', task.name);
       // fd.append('description', task.description),
-      // fd.append('priority', task.priority!)    
-      return this.http.patch(`api/tasks/${id}`, task, this.httpOptions).pipe(         
-        catchError(this.handleError<Task>('addingPost'))
-      );    
-    
+      // fd.append('priority', task.priority!)       
+        return this.http.patch(`api/tasks/${id}`, task, this.httpOptions).pipe(         
+          catchError(this.handleError<Task>('addingPost')) )
+         
+  }
+  addPriority(priority : Priority) : Observable<Priority>{    
+    return this.http.post<Priority>('api/priorities', priority, this.httpOptions).pipe(         
+      catchError(this.handleError<Priority>('addPriority'))
+    );    
+  }
+  updatePriority(priority: {}, id: string): Observable<any> {   
+        return this.http.patch(`api/priorities/${id}`, priority, this.httpOptions).pipe(        
+           )         
   }
   getTaskById(id: string): Observable<Task> {
     const url = `api/tasks/${id}`;
@@ -88,11 +93,16 @@ export class FortasksService {
       catchError(this.handleError<Task>(`gettask id=${id}`))
     );
   } 
-  getTasksByPriorities(priority: string): Observable<Task[]> {
-    return this.http.get<Task[]>(`api/tasks?priority=${priority}`);
+  getTasksByPriorities(priority: string, sort: string): Observable<Task[]> {
+    return this.http.get<Task[]>(`api/tasks?priority=${priority}&sort=${sort}`);
   }
   addFile(uploadFormData : FormData) {    
    return this.http.post('api/tasks/upload', uploadFormData)    
   }
+  getPriorities(): Observable<Priority[]> {    
+    return this.http.get<Priority[]>(`api/priorities/`).pipe(      
+      catchError(this.handleError<Priority[]>(`getPriorities`))
+    );
+  }  
  
 }

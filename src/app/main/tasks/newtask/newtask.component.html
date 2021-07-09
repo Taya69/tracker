@@ -1,7 +1,8 @@
-<div>
+<div class="container">
+<div class="row">
     <mat-form-field class="full-width" appearance="outline">
       <mat-label>Name</mat-label>
-      <input       
+      <input      
         matInput
         placeholder="Name of task" required 
         [(ngModel)]='name'           
@@ -10,18 +11,38 @@
           Name is required
         </mat-error>
     </mat-form-field>
+    <mat-form-field class="full-width" appearance="outline" class='order'>
+      <mat-label>Order</mat-label>
+      <input      
+        matInput
+        placeholder="Order of task" required 
+        [(ngModel)]='order'           
+      />
+      <mat-error>
+          Name is required
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="deadline">
+      <mat-label>Deadline</mat-label>
+      <input matInput [matDatepicker]="picker" [(ngModel)]='dateDeadline'
+             (dateInput)="addEvent($event)" (dateChange)="addEvent($event)">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>  
   </div>
   <div>
-    <mat-form-field class="full-width" appearance="outline">
+    <mat-form-field class="full-width" appearance="outline" class="description">
       <mat-label>Description</mat-label>
-      <input       
+      <textarea 
+        cols="100"      
         matInput
         placeholder="Description" required 
         [(ngModel)]='description'           
-      />
+      ></textarea>
       <mat-error>
           Description is required
         </mat-error>
     </mat-form-field>
   </div>
   <button mat-button (click)='save()'>Save</button>
+</div>

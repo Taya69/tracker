@@ -1,0 +1,17 @@
+.row {
+    display: flex;
+}
+.description {
+    width: 100%;
+}
+.deadline {
+    width: 30%;
+}
+.order {
+    width: 20%;
+}
+.container {
+    border: 4px double rgb(111, 109, 228);
+    background-color: rgb(207, 220, 221);
+    
+}
