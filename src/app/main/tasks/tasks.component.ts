@@ -12,7 +12,11 @@ interface ColumnsForTasks {
   array: Task[],
   showTask: boolean,
   orders: String[],
-  selectOrder: String     
+  selectOrder: String      
+}
+interface DataForDialog {
+  id : string,
+  dialog: string
 }
 
 
@@ -38,41 +42,44 @@ export class TasksComponent implements OnInit {
   customPriority: string = ''  
   testArray: Task[] = []
   priority: string = ''
-  currentArr: any
+  currentArr: Task[] = []
   currentTask: any
   sorts: String[] = ['by order', 'by name'];   
-  columns: ColumnsForTasks[] = []  
-  selectedOrder = 'by order';
-   test (event: any, column: ColumnsForTasks) {       
-       column.array.sort(function(a,b){
-        if (event.target.value === 'by name'){
-          if (a.name > b.name) {
-            return 1;
-          }
-          if (a.name < b.name) {
-            return -1;
-          }          
-          return 0;
-        } else {
-          if (a.order > b.order) {
-            return 1;
-          }
-          if (a.order < b.order) {
-            return -1;
-          }          
-          return 0;
-        }
-      
-       })
-     
-
+  columns: ColumnsForTasks[] = [] 
+  currentColumn: any 
+  selectedOrder = 'by order'
+  lastOrder: number = 0
+  loading: boolean = true
+   changeSort (event: any,column: ColumnsForTasks) {     
+    this.sortColumn(event.target.value) 
+    column.selectOrder = event.target.value;   
    }
-   ngOnInit() { 
-    this.taskService.getPriorities().subscribe((data) => {this.priorities = data;
-    
+   sortColumn(sortBy: string) {
+    this.currentArr.sort(function(a,b){
+      if (sortBy === 'by name'){
+        if (a.name > b.name) {
+          return 1;
+        }
+        if (a.name < b.name) {
+          return -1;
+        }          
+        return 0;
+      } else {
+        if (a.order > b.order) {
+          return 1;
+        }
+        if (a.order < b.order) {
+          return -1;
+        }          
+        return 0;
+      }    
+     })     
+   }
+   ngOnInit() {     
+    this.taskService.getPriorities().subscribe((data) => {this.priorities = data;    
     for (let i = 0; i < this.priorities.length; i++) {      
-      this.taskService.getTasksByPriorities(this.priorities[i].name, 'by order').subscribe((data)=> {       
-        this.columns.push({priority: this.priorities[i], array: data, showTask : false, orders: this.sorts, selectOrder: 'by order'})
+      this.taskService.getTasksByPriorities(this.priorities[i].name, this.selectedOrder).subscribe((data)=> {       
+        this.columns.push({priority: this.priorities[i], array: data, showTask : false, orders: this.sorts, selectOrder: this.selectedOrder})
         this.columns.sort(function(a, b) {      
           if (a.priority.order > b.priority.order) {
             return 1;
@@ -82,20 +89,34 @@ export class TasksComponent implements OnInit {
           }          
           return 0;
         });        
-      })       
+      }
+      )       
     } 
-  })
-   
+    this.loading = false;
+  }  
+  )   
+  }
+  getLastOrder () {
+   console.log(this.currentArr) 
+   const arr = this.currentArr;
+   arr.sort(function(a, b){
+     if (a.order > b.order) return 1
+     if (a.order < b.order) return 0
+     return 0
+   });
+   this.lastOrder = arr[arr.length-1].order
   }
   addColumn () {    
     const DialogRef = this.dialog.open(AddingOfColumn);    
-    DialogRef.afterClosed().subscribe((el) => {    
-      this.taskService.addPriority({name: el, custom: true, order: 3}).subscribe((data)=> {
-        this.priorities.push(data);
-        this.columns.push({priority: data, array: [], showTask: false, orders: this.sorts, selectOrder: 'by order'})
+    DialogRef.afterClosed().subscribe((el) => { 
+      this.taskService.getPriorities().subscribe((data) => {
+        this.taskService.addPriority({name: el, custom: true, order: data[data.length-1].order+1}).subscribe((data)=> {
+          this.priorities.push(data);
+          this.columns.push({priority: data, array: [], showTask: false, orders: this.sorts, selectOrder: this.selectedOrder})
+        })
+      })   
+     
       })
-      })
-
     this.taskService.getTasksByPriorities(this.customPriority, 'by order').subscribe()
   }
   drop(event: CdkDragDrop<Task[]>) {
@@ -119,8 +140,7 @@ export class TasksComponent implements OnInit {
     return this.email.hasError('email') ? 'Not a valid email' : '';
   }
   
-  save (properties: any[]) {
-   
+  save (properties: any[]) {   
     this.taskService.addTask({      
       name: properties[0],
       description: properties[1], 
@@ -128,15 +148,15 @@ export class TasksComponent implements OnInit {
       dateDeadline: properties[2],     
       priority: this.priority,
       dateOfCreate: new Date()
-    }).subscribe((data) => {this.currentArr.push(data)})
+    }).subscribe((data) => {this.currentArr.push(data); this.sortColumn(this.currentColumn.selectOrder)})
   }
-  setPriority (priority : string) { 
-  //  console.log(this.columns, priority) 
-    this.priority = priority; 
+  setPriority (column: ColumnsForTasks) {    
+    this.priority = column.priority.name; 
+    this.currentColumn = column       
     //  this.currentArr = this.columns.find((el)=> {el.priority === this.priority})?.array;   
     let arr: any = []
     for (let i = 0; i < this.columns.length; i++) {
-      if (this.columns[i].priority.name === priority) {
+      if (this.columns[i].priority.name === column.priority.name) {
         arr = this.columns[i].array
       }
     }  
@@ -145,7 +165,7 @@ export class TasksComponent implements OnInit {
   confirmOfdelete(task: Task) {
     this.currentTask = task
     const DialogRef = this.dialog.open(ConfimationDialog, {      
-      data: task._id
+      data: {id: task._id, dialog: 'task'}
     });    
     DialogRef.afterClosed().subscribe((el) => {
       if (el === 'delete') {
@@ -154,24 +174,48 @@ export class TasksComponent implements OnInit {
       }
       })
   } 
+  confirmOfdeleteColumn(priorityId : string | undefined) {    
+    const DialogRef = this.dialog.open(ConfimationDialog, { 
+      data: {id: priorityId, dialog: 'column'}  
+    });    
+    DialogRef.afterClosed().subscribe((el) => {
+      if (el === 'delete') {
+        let index = this.columns.indexOf(this.currentColumn) 
+        this.columns.splice(index, 1);
+      }
+      })
+  } 
 }
 
 @Component({
   selector: 'confimation-dialog',
-  template: "<h2>Are you sure you want to delete the user?</h2><button mat-button (click)='delete()'>yes</button><button mat-button (click)='closeDialog()'>no</button>",
+  templateUrl: "deleteColumn.component.html",
   styleUrls: ['./tasks.component.css']
 })
 export class ConfimationDialog {
   
-constructor (@Inject(MAT_DIALOG_DATA) public data: string, public dialogRef2: MatDialogRef<ConfimationDialog>,
+constructor (@Inject(MAT_DIALOG_DATA) public data: DataForDialog, public dialogRef2: MatDialogRef<ConfimationDialog>,
 private taskService: FortasksService) {}
 closeDialog () {
+  console.log(this.data.dialog)
   this.dialogRef2.close("notDelete")
 }
-
 delete(): void {   
-  this.taskService.deleteTask(this.data).subscribe();
+  this.taskService.deleteTask(this.data.id).subscribe();
   this.dialogRef2.close("delete")
+}
+deleteColumn() {
+  this.taskService.getPriorityById(this.data.id).subscribe((priority)=> {
+    console.log(priority, this.data);
+    
+    this.taskService.deletePriority(this.data.id).subscribe();
+    this.taskService.getTasksByPriorities(priority.name, 'by order').subscribe((tasks)=> {
+      tasks.forEach(element => {
+        this.taskService.deleteTask(element._id!).subscribe()
+      });
+      this.dialogRef2.close("delete")
+    })
+  }) 
 }
 }
 

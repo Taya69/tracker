@@ -11,5 +11,8 @@ export class LayoutsMainComponent implements OnInit {
 
   ngOnInit(): void {
   }
+  logout() {
+    localStorage.removeItem('token')
+  }
 
 }

@@ -1,4 +1,5 @@
 <button (click)="goBack()" mat-button>go back</button>
+<mat-progress-bar mode="indeterminate" *ngIf='loading'></mat-progress-bar>
 <mat-grid-list cols="5" rowHeight="100px" *ngIf='task'>
   <mat-grid-tile class="priority"      
       colspan='3'

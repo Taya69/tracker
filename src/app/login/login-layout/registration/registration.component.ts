@@ -2,7 +2,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms'
 import { GetUserService } from '../../../get-user.service'
 import {Router} from '@angular/router'
-import { Users } from 'src/mock-users';
+import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 
 @Component({
@@ -15,7 +15,7 @@ export class RegistrationComponent implements OnInit {
   hide: boolean = true;
   email: string = '';
   password: string = ''
-  constructor(private fb: FormBuilder, private userService: GetUserService, private router: Router) {
+  constructor(private fb: FormBuilder, private userService: GetUserService, private router: Router, public dialog: MatDialog) {
   }
 
   ngOnInit() {
@@ -26,33 +26,29 @@ export class RegistrationComponent implements OnInit {
     password: ['', [Validators.required, Validators.minLength(1)]]
   })
     
-  addUser(event: any) {    
-    if (!this.loginForm.valid) {      
+  addUser() {    
+    if (!this.loginForm.valid) {            
       return;
-    }    
-    if (this.userService.testNameOfUser(this.email)) {      
-      return
-    }
-    this.userService.getLastId().subscribe((id) => {      
-      this.id = id+1
-    })      
-    this.userService.addUser({
-      id: this.id,
-      name: this.email,
-      password: this.password,
-      code: ''      
-    }     
-    )      
-    this.router.navigate( ['/verification',], 
-    {
-        queryParams:{
-            'mode': 'install',
-            'userId': this.id
-        },        
-    }
-    )
-   
+    }          
+    this.userService.register(this.email, this.password).subscribe((data)=> {
+      if (data === undefined) {
+        this.dialog.open(DialogRegistration);
+      } else {
+        console.log(data)
+        this.userService.login(data.email, data.password).subscribe(data => {
+          localStorage.setItem('token', String(data)); this.router.navigate( ['/home/tasks'])
+        })        
+      }
+    }   
+    )   
   }
+}
 
+@Component({
+  selector: 'dialog-refistration',
+  templateUrl: 'registrationDialog.component.html',
+})
+export class DialogRegistration {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: string) {}
 }
 

@@ -1,0 +1,5 @@
+<h2>Are you sure you want to delete the {{data.dialog === 'task' ? 'task' : 'column'}}</h2>
+<button mat-button (click)='delete()' *ngIf='data.dialog === "task"'>yes</button>
+<button mat-button (click)='deleteColumn()'*ngIf='data.dialog === "column"'>deleteColumn</button>
+<button mat-button (click)='closeDialog()'>no</button>
+

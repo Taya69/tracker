@@ -103,6 +103,19 @@ export class FortasksService {
     return this.http.get<Priority[]>(`api/priorities/`).pipe(      
       catchError(this.handleError<Priority[]>(`getPriorities`))
     );
-  }  
+  } 
+  deletePriority(id: string): Observable<Priority> {
+    const url = `api/priorities/${id}`; 
+    console.log(url) 
+    return this.http.delete<Priority>(url).pipe(      
+      catchError(this.handleError<Priority>('deleteTask'))
+    );
+  } 
+  getPriorityById(id: string): Observable<Priority> {
+    const url = `api/priorities/${id}`;    
+    return this.http.get<Priority>(url).pipe(      
+      catchError(this.handleError<Priority>(`getpriority id=${id}`))
+    );
+  } 
  
 }

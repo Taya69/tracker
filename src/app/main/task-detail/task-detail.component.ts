@@ -27,7 +27,8 @@ export class TaskDetailComponent implements OnInit {
   dateOfDeadLine: Date = new Date()
   order: number = 0
   priority: string = ''
-  events: string[] = [];
+  events: string[] = []
+  loading: boolean = true
   constructor(
     private route: ActivatedRoute,
     private taskService: FortasksService,
@@ -48,6 +49,7 @@ export class TaskDetailComponent implements OnInit {
         this.dateOfDeadLine = this.task.dateDeadline,
         this.order = this.task.order,
         this.priority = this.task.priority
+        this.loading = false
       });    
   }
   goBack(): void {

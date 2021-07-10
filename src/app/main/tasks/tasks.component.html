@@ -1,16 +1,21 @@
 <button mat-button (click)='addColumn()'>Add column</button>
-<div cdkDropListGroup> 
+<mat-progress-bar mode="indeterminate" *ngIf='loading'></mat-progress-bar>
+<div cdkDropListGroup  *ngIf='!loading'> 
   <div class="example-container" *ngFor='let column of columns'
-  (click)='setPriority(column.priority.name)'>
+  (click)='setPriority(column)'>
     <div class="headerOfBox">
       <h2>{{column.priority.name}}</h2>
       <mat-form-field appearance="fill">
         <mat-label>Sort by</mat-label>
-        <select matNativeControl (change)="test($event, column)">          
+        <select matNativeControl (change)="changeSort($event, column)">          
           <option *ngFor="let option of column.orders" [value]="option"
                   [selected]="selectedOrder === option">{{ option }}</option>
         </select>
       </mat-form-field>
+      <label [matMenuTriggerFor]="menu2" class="material-icons">more_vert</label>
+      <mat-menu #menu2="matMenu">      
+      <button mat-menu-item (click)='confirmOfdeleteColumn(column.priority._id)'>Delete</button>
+      </mat-menu>   
     </div>  
     <div   
     cdkDropList
@@ -25,13 +30,14 @@
     <label [matMenuTriggerFor]="menu" class="material-icons" (click)='$event.stopPropagation()'>more_vert</label>
     <mat-menu #menu="matMenu">
     <button mat-menu-item routerLink = "{{item._id}}">Edit</button>
-    <button mat-menu-item (click)='setPriority(column.priority.name); confirmOfdelete(item)'>Delete</button>
+    <button mat-menu-item (click)='setPriority(column); confirmOfdelete(item)'>Delete</button>
     </mat-menu>    
     </div>
     </div>
-    <button mat-button (click)='column.showTask = !column.showTask'>Add task</button>  
+    <button mat-button (click)='column.showTask = !column.showTask; setPriority(column); getLastOrder()'>Add task</button>  
     <form class="form" action="" [ngClass]="{showTaskClass: column.showTask}">
-     <app-newtask (onSave)="save($event); column.showTask = !column.showTask"
+     <app-newtask [lastOrder]='lastOrder'
+     (onSave)="save($event); column.showTask = !column.showTask"
     ></app-newtask> 
     </form>
   </div>      

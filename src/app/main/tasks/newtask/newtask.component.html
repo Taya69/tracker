@@ -4,7 +4,7 @@
       <mat-label>Name</mat-label>
       <input      
         matInput
-        placeholder="Name of task" required 
+        placeholder="Name of task" 
         [(ngModel)]='name'           
       />
       <mat-error>
@@ -15,7 +15,7 @@
       <mat-label>Order</mat-label>
       <input      
         matInput
-        placeholder="Order of task" required 
+        placeholder="Order of task"
         [(ngModel)]='order'           
       />
       <mat-error>
@@ -36,7 +36,7 @@
       <textarea 
         cols="100"      
         matInput
-        placeholder="Description" required 
+        placeholder="Description"
         [(ngModel)]='description'           
       ></textarea>
       <mat-error>
@@ -45,4 +45,5 @@
     </mat-form-field>
   </div>
   <button mat-button (click)='save()'>Save</button>
+  <button mat-button (click)='setLastOrder()'>set last order</button>
 </div>

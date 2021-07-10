@@ -1,3 +1,16 @@
-<p>layouts works!</p>
+<p>
+  <mat-toolbar>
+   <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span>My App</span>
+  <span class="example-spacer"></span>
+ 
+  <label [matMenuTriggerFor]="menu" class="material-icons">logout</label>
+  <mat-menu #menu="matMenu">      
+  <button mat-menu-item (click)='logout() ' routerLink="/">Logout</button>
+  </mat-menu>  
+ 
+</mat-toolbar>
+</p>
 <router-outlet></router-outlet>
-

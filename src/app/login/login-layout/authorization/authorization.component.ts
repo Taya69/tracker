@@ -26,34 +26,19 @@ export class AuthorizationComponent implements OnInit {
   onLogin() {
     if (!this.loginForm.valid) {
       return;
-    }  
-    this.userService.findUser(this.email1).subscribe(
-      (user)=> {
-        if (user === undefined) {          
-          this.dialog.open(DialogDataExampleDialog, {
-            data: 'login'                   
-          });
-            return
-        } else {
-          if (!(this.password === user.password)) { 
-            this.dialog.open(DialogDataExampleDialog, {
-              data: 'password' 
-            });           
-            return
-          } else {            
-            this.router.navigate(['/verification',], 
-            {
-                queryParams:{
-                    'mode': 'confirmation',
-                    'userId': user.id,
-                },        
-            })
-          }
-        }
-      }
+    }    
+    this.userService.login(this.email1, this.password).subscribe((data)=> {
+      console.log(this.email1, this.password)
+      if (data === undefined){
+        this.dialog.open(DialogDataExampleDialog);
+                  return     
+              } else {
+                this.router.navigate(['/home/tasks'])
+                localStorage.setItem("token", String(data))             
+              }
+            }          
     )
   }
-
 }
 
 @Component({
