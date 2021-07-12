@@ -5,7 +5,12 @@ import { FortasksService } from 'src/app/for-tasks.service';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { take } from 'rxjs/operators';
+import {COMMA, ENTER} from '@angular/cdk/keycodes';
+import {MatChipInputEvent} from '@angular/material/chips';
 
+export interface Fruit {
+  name: string;
+}
 
 @Component({
   selector: 'app-task-detail',
@@ -15,6 +20,8 @@ import { take } from 'rxjs/operators';
 export class TaskDetailComponent implements OnInit { 
   @ViewChild('inputForFile')
   inputForFileRef!: ElementRef;
+  @ViewChild('linkOfFile')
+  linkRef!: ElementRef;
   @ViewChild('autosize') autosize!: CdkTextareaAutosize;
   task: any
   file!: File;
@@ -29,6 +36,9 @@ export class TaskDetailComponent implements OnInit {
   priority: string = ''
   events: string[] = []
   loading: boolean = true
+  selectable = true;
+  removable = true;
+ 
   constructor(
     private route: ActivatedRoute,
     private taskService: FortasksService,
@@ -50,6 +60,7 @@ export class TaskDetailComponent implements OnInit {
         this.order = this.task.order,
         this.priority = this.task.priority
         this.loading = false
+        console.log(task.file)
       });    
   }
   goBack(): void {
@@ -64,7 +75,7 @@ export class TaskDetailComponent implements OnInit {
     this.inputForFileRef.nativeElement.click()
   } 
   onFileUpload (event : any) {
-    const file = event.target.files[0];
+    const file = event.target.files[0];    
     this.file = file;
     if (file.type === 'image/png' || file.type === 'image/jpeg' ) {
       const reader = new FileReader()
@@ -96,10 +107,25 @@ export class TaskDetailComponent implements OnInit {
       }, this.task._id
       ).subscribe()
   } 
+  triggerDownload () {
+    this.linkRef.nativeElement.click()
+  }
+  getHref (fileForLink: String) {
+    return `api/uploads/${fileForLink}`
+  }
   triggerResize() {
     // Wait for changes to be applied, then trigger textarea resize.
     this._ngZone.onStable.pipe(take(1))
         .subscribe(() => this.autosize.resizeToFitContent(true));
+  }
+   
+ 
+  remove(file: String): void {
+    const index = this.files.indexOf(file);
+    if (index >= 0) {
+      this.files.splice(index, 1);
+    }
+    this.taskService.updateTask({file: this.files}, this.id).subscribe()
   }
 }
 

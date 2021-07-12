@@ -1,37 +1,50 @@
+<div class="wrapper">
 <button mat-button (click)='addColumn()'>Add column</button>
 <mat-progress-bar mode="indeterminate" *ngIf='loading'></mat-progress-bar>
-<div cdkDropListGroup  *ngIf='!loading'> 
+<div cdkDropListGroup  *ngIf='!loading' class="container">   
   <div class="example-container" *ngFor='let column of columns'
   (click)='setPriority(column)'>
     <div class="headerOfBox">
-      <h2>{{column.priority.name}}</h2>
-      <mat-form-field appearance="fill">
+      <div class="header">
+        <h2>{{column.priority.name}}</h2>
+        <label [matMenuTriggerFor]="menu2" class="material-icons">more_vert</label>
+        <mat-menu #menu2="matMenu">      
+        <button mat-menu-item (click)='confirmOfdeleteColumn(column.priority._id)'>Delete</button>
+        </mat-menu>   
+      </div>     
+      <mat-form-field appearance="fill" class="sort">
         <mat-label>Sort by</mat-label>
         <select matNativeControl (change)="changeSort($event, column)">          
           <option *ngFor="let option of column.orders" [value]="option"
                   [selected]="selectedOrder === option">{{ option }}</option>
         </select>
       </mat-form-field>
-      <label [matMenuTriggerFor]="menu2" class="material-icons">more_vert</label>
-      <mat-menu #menu2="matMenu">      
-      <button mat-menu-item (click)='confirmOfdeleteColumn(column.priority._id)'>Delete</button>
-      </mat-menu>   
+     
     </div>  
     <div   
     cdkDropList
     [cdkDropListData]="column.array"
-    class="example-list"
+    class="example-list  cdk-drag-animating"
     [id]='column.priority.name'    
     (cdkDropListDropped)="drop($event)">
-    <div class="example-box" *ngFor="let item of column.array" cdkDrag routerLink = "{{item._id}}">      
-    <div>{{item.name}}</div>
-    <div>{{item.dateDeadline | date}}</div>
-    <div>{{item.order}}</div>      
-    <label [matMenuTriggerFor]="menu" class="material-icons" (click)='$event.stopPropagation()'>more_vert</label>
-    <mat-menu #menu="matMenu">
-    <button mat-menu-item routerLink = "{{item._id}}">Edit</button>
-    <button mat-menu-item (click)='setPriority(column); confirmOfdelete(item)'>Delete</button>
-    </mat-menu>    
+    <div class="example-box" *ngFor="let item of column.array" cdkDrag routerLink = "{{item._id}}">
+      <div class="content">
+        <div class="block">
+          <div id="row1">
+          <div>{{item.name}}</div>
+           
+          </div> 
+          <div id="row2">
+            <div>{{item.order}}</div> 
+            <div>{{item.dateDeadline | date}}</div>         
+          </div>    
+        </div>
+        <label [matMenuTriggerFor]="menu" class="material-icons" (click)='$event.stopPropagation()'>more_vert</label>
+            <mat-menu #menu="matMenu">
+            <button mat-menu-item routerLink = "{{item._id}}">Edit</button>
+            <button mat-menu-item (click)='setPriority(column); confirmOfdelete(item)'>Delete</button>
+            </mat-menu>     
+      </div>     
     </div>
     </div>
     <button mat-button (click)='column.showTask = !column.showTask; setPriority(column); getLastOrder()'>Add task</button>  
@@ -42,5 +55,6 @@
     </form>
   </div>      
 </div> 
+</div>
   
   

@@ -50,6 +50,7 @@ export class TasksComponent implements OnInit {
   selectedOrder = 'by order'
   lastOrder: number = 0
   loading: boolean = true
+  numberOfColumns: number = 3
    changeSort (event: any,column: ColumnsForTasks) {     
     this.sortColumn(event.target.value) 
     column.selectOrder = event.target.value;   
@@ -76,7 +77,8 @@ export class TasksComponent implements OnInit {
      })     
    }
    ngOnInit() {     
-    this.taskService.getPriorities().subscribe((data) => {this.priorities = data;    
+    this.taskService.getPriorities().subscribe((data) => {this.priorities = data;
+      this.numberOfColumns = data.length    
     for (let i = 0; i < this.priorities.length; i++) {      
       this.taskService.getTasksByPriorities(this.priorities[i].name, this.selectedOrder).subscribe((data)=> {       
         this.columns.push({priority: this.priorities[i], array: data, showTask : false, orders: this.sorts, selectOrder: this.selectedOrder})

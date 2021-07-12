@@ -4,6 +4,7 @@
 .description {
     background-color: rgb(191, 230, 194);
     align-self: flex-start;
+    align-items: flex-start;
 }
 .order {
     background-color: rgb(216, 228, 166);
@@ -38,5 +39,14 @@
     height: 100%;
 }
 textarea {
-    height: 100%;   
+    
+    width: 100%;   
+}
+img {
+    max-width: 100px;
+    max-height: 100px;
+}
+.footer {
+    display: flex;
+    justify-content: space-between;
 }
