@@ -1,17 +1,10 @@
 <button (click)="goBack()" mat-button>go back</button>
 <mat-progress-bar mode="indeterminate" *ngIf='loading'></mat-progress-bar>
-
 <mat-grid-list cols="5" rowHeight="100px" *ngIf='task'>
-  <mat-grid-tile class="priority"      
-      colspan='3'    
+  <mat-grid-tile      
+      colspan='5'
+      rawspan='0.3'   
       >      
-      <mat-form-field appearance="fill">
-        <mat-label>Priority</mat-label>
-        <select matNativeControl (change)="changeOrder($event)">          
-          <option *ngFor="let order of orders" [value]="order.name"
-          >{{ order.name }}</option>
-        </select>
-      </mat-form-field>
       <mat-form-field class="full-width" appearance="outline" class='width100'>
         <mat-label>Name</mat-label>
         <textarea  
@@ -26,41 +19,38 @@
         <mat-error>
             Name is required
           </mat-error>
-      </mat-form-field>  
-      <mat-form-field class="full-width" appearance="outline" class='width100'>
-        <mat-label>Priority</mat-label>
-        <textarea  
-         cdkTextareaAutosize
-                #autosize="cdkTextareaAutosize"
-                cdkAutosizeMinRows="3"
-                cdkAutosizeMaxRows="20"     
-          matInput
-          placeholder="Priority of task" required 
-          [(ngModel)]='priority'           
-        ></textarea>
-        <mat-error>
-            Name is required
-          </mat-error>
-      </mat-form-field>   
+      </mat-form-field>      
+  </mat-grid-tile>
+  <mat-grid-tile colspan='1'>
+    <mat-form-field appearance="fill">
+      <mat-label>Priority</mat-label>
+      <select matNativeControl (change)="changeOrder($event)">          
+        <option *ngFor="let order1 of orders" [value]="order1.name" [selected]='order'
+        >{{ order1.name }}</option>
+      </select>
+    </mat-form-field>
+  </mat-grid-tile>
+  <mat-grid-tile colspan='2' class="dateOfDeadline">
+    <mat-form  [formGroup]="taskForm">
+      <mat-form-field appearance="outline" class='width100' name='first'>
+        <mat-label>Deadline</mat-label>
+        <input matInput [matDatepicker]="picker" [(ngModel)]='dateOfDeadLine'
+               (dateInput)="addEvent($event)" (dateChange)="addEvent($event)" formControlName="deadline" >
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+      </mat-form>
   </mat-grid-tile>
   <mat-grid-tile  class="dateOfDeadline"    
   colspan=2
   rowspan="1"
-  >
+  >  
   <mat-form  [formGroup]="taskForm">
-    <mat-form-field appearance="outline" class='width100' name='first'>
-      <mat-label>Deadline</mat-label>
-      <input matInput [matDatepicker]="picker" [(ngModel)]='dateOfDeadLine'
-             (dateInput)="addEvent($event)" (dateChange)="addEvent($event)" formControlName="deadline" >
-      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-      <mat-datepicker #picker></mat-datepicker>
-    </mat-form-field> 
     <mat-form-field appearance="outline" class='width100'>
       <mat-label>Date of creation</mat-label>
       <input matInput [value]='task.dateOfCreate | date'>    
     </mat-form-field> 
-  </mat-form>
-     
+  </mat-form> 
 </mat-grid-tile>
   <mat-grid-tile  class="description"    
       colspan=5

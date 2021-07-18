@@ -34,7 +34,8 @@ export class AuthorizationComponent implements OnInit {
                   return     
               } else {
                 this.router.navigate(['/home/tasks'])
-                localStorage.setItem("token", String(data))             
+                localStorage.setItem("token", String(data))
+                localStorage.setItem("name", this.email1)             
               }
             }          
     )

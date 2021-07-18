@@ -13,6 +13,10 @@ export class LayoutsMainComponent implements OnInit {
   }
   logout() {
     localStorage.removeItem('token')
+    localStorage.removeItem('name')
+  }
+  getName () {
+    return localStorage.getItem('name')
   }
 
 }

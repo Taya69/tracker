@@ -106,12 +106,13 @@ export class TaskDetailComponent implements OnInit {
   }
   saveChange () {
     if (!this.taskForm.valid) {console.log(1111); return}
-    console.log(2222222)
+    const orderOrder = this.taskService.getOrderByName(this.order)
     this.taskService.updateTask({
        name : this.name,
        dateDeadline: this.dateOfDeadLine,
        order: this.order,
-       description: this.description
+       description: this.description,
+       orderOrder: orderOrder
       }, this.task._id
       ).subscribe()
   } 

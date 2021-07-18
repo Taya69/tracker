@@ -5,10 +5,11 @@
   </button>
   <span>My App</span>
   <span class="example-spacer"></span>
- 
-  <label [matMenuTriggerFor]="menu" class="material-icons">logout</label>
+  
+
+  <label [matMenuTriggerFor]="menu">{{getName()}}</label>
   <mat-menu #menu="matMenu">      
-  <button mat-menu-item (click)='logout() ' routerLink="/">Logout</button>
+  <button mat-menu-item (click)='logout()' routerLink="/">Logout</button>  
   </mat-menu>  
  
 </mat-toolbar>

@@ -7,10 +7,7 @@ export function createPasswordStrengthValidator(): ValidatorFn {
         if (!value) {
             return null;
         }
-
-        const dateLessThenNew = value >= new Date();  
-        const passwordValid = dateLessThenNew
-        console.log(passwordValid)
+        const passwordValid = (value > new Date() || value == new Date()) ? true : false;     
         return !passwordValid ? {passwordStrength:true}: null;
     }
 }

@@ -36,7 +36,9 @@ export class RegistrationComponent implements OnInit {
       } else {
         console.log(data)
         this.userService.login(data.email, data.password).subscribe(data => {
+          localStorage.setItem("name", this.email)
           localStorage.setItem('token', String(data)); this.router.navigate( ['/home/tasks'])
+            
         })        
       }
     }   
