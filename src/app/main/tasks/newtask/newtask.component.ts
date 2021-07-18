@@ -1,5 +1,7 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { FortasksService } from 'src/app/for-tasks.service';
+import { Order } from 'src/interfaces/order';
 import { Priority } from 'src/interfaces/priority';
 
 @Component({
@@ -9,29 +11,37 @@ import { Priority } from 'src/interfaces/priority';
 })
 export class NewtaskComponent implements OnInit {
   @Output() onSave = new EventEmitter<any>();   
-  @Input() lastOrder?: number
+  
+  @ViewChild('deadline') deadloneRef!: ElementRef;
   // Push a search term into the observable stream.
   
-  constructor() { }
+  constructor(private taskService: FortasksService) { }
   name: string = '';
   description: string = ''
-  order: number = 1
+  order: string = 'low'
   dateDeadline: Date = new Date()
+  orders: Order[] = []
+  //selectedOrder: Order = {name: '', order: 0}
   ngOnInit(): void {
-    this.order = this.lastOrder!
+    this.taskService.getOrders().subscribe(data => this.orders = data)
   }
-  setLastOrder () {
-    this.order = this.lastOrder!+1
-  }
-  save() {
-    
-    this.onSave.emit([this.name, this.description, this.dateDeadline, this.order]);
-    this.name = '';
-    this.order = 1;
+  
+  save() { 
+    console.log(this.order) 
+    const orderOrder = this.taskService.getOrderByName(this.order)     
+    this.onSave.emit([this.name, this.description, this.dateDeadline, this.order, orderOrder]);
+    this.name = '';       
     this.description = '';
     this.dateDeadline = new Date()
   }
-  addEvent(event: MatDatepickerInputEvent<Date>) {    
-    this.dateDeadline = event.value!    
+  addEvent(event: MatDatepickerInputEvent<Date>) { 
+    if (event.value! < new Date()) {
+         
+    } else {
+      this.dateDeadline = event.value! 
+    }       
+  }
+  changeOrder (event: any) {            
+        this.order = event.target.value    
   }
 }
