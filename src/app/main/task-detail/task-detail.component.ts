@@ -7,6 +7,9 @@ import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { take } from 'rxjs/operators';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {MatChipInputEvent} from '@angular/material/chips';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import {createPasswordStrengthValidator} from '../../dateValidator.validator'
+import { Order } from 'src/interfaces/order';
 
 export interface Fruit {
   name: string;
@@ -25,30 +28,34 @@ export class TaskDetailComponent implements OnInit {
   @ViewChild('autosize') autosize!: CdkTextareaAutosize;
   task: any
   file!: File;
-  files: String[] = []
+  files: string[] = []
   imagePreview: any
   id: string = ''
   name: string = ''
   description: string = ''
   dateOfCreation: Date = new Date()
   dateOfDeadLine: Date = new Date()
-  order: number = 0
+  order: string = ''
   priority: string = ''
   events: string[] = []
   loading: boolean = true
   selectable = true;
   removable = true;
- 
+  orders: Order[] = []
   constructor(
     private route: ActivatedRoute,
     private taskService: FortasksService,
     private location: Location,
-    private _ngZone: NgZone
+    private fb: FormBuilder
   ) { }
 
   ngOnInit(): void {
+    this.taskService.getOrders().subscribe(data => this.orders = data)
     this.getTask()
   }
+  taskForm: FormGroup = this.fb.group({
+    deadline: ['', [createPasswordStrengthValidator()]]  
+  }) 
   getTask(): void {
     this.id = String(this.route.snapshot.paramMap.get('id'));
     this.taskService.getTaskById(this.id)
@@ -57,7 +64,7 @@ export class TaskDetailComponent implements OnInit {
         this.name = this.task.name,
         this.description = this.task.description,
         this.dateOfDeadLine = this.task.dateDeadline,
-        this.order = this.task.order,
+        this.order = this.task.orderName,
         this.priority = this.task.priority
         this.loading = false
         console.log(task.file)
@@ -67,8 +74,7 @@ export class TaskDetailComponent implements OnInit {
     this.location.back();
   }
   save(): void {
-    if (this.task) {
-     
+    if (this.task) {     
     }
   }
   triggerOfUpload() {
@@ -99,6 +105,8 @@ export class TaskDetailComponent implements OnInit {
     this.dateOfDeadLine = event.value!    
   }
   saveChange () {
+    if (!this.taskForm.valid) {console.log(1111); return}
+    console.log(2222222)
     this.taskService.updateTask({
        name : this.name,
        dateDeadline: this.dateOfDeadLine,
@@ -107,25 +115,30 @@ export class TaskDetailComponent implements OnInit {
       }, this.task._id
       ).subscribe()
   } 
-  triggerDownload () {
-    this.linkRef.nativeElement.click()
-  }
-  getHref (fileForLink: String) {
-    return `api/uploads/${fileForLink}`
-  }
-  triggerResize() {
-    // Wait for changes to be applied, then trigger textarea resize.
-    this._ngZone.onStable.pipe(take(1))
-        .subscribe(() => this.autosize.resizeToFitContent(true));
-  }
-   
- 
-  remove(file: String): void {
+  async triggerDownload (file: string) {  
+    console.log(file)
+    const response = await this.taskService.downloadFile(file)
+    if (response.status === 200) {
+       const blob = await response.blob()
+       console.log(window.URL)
+       const downloadUrl = window.URL.createObjectURL(blob)
+       const link = document.createElement('a')
+       link.href = downloadUrl
+       link.download = file
+       document.body.appendChild(link)
+       link.click()
+       link.remove()
+   }
+  }  
+  remove(file: string): void {
     const index = this.files.indexOf(file);
     if (index >= 0) {
       this.files.splice(index, 1);
     }
     this.taskService.updateTask({file: this.files}, this.id).subscribe()
   }
+  changeOrder (event: any) {            
+    this.order = event.target.value    
+}
 }
 

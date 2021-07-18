@@ -11,6 +11,7 @@ import { TasksComponent } from '../main/tasks/tasks.component';
 import { TaskDetailComponent } from '../main/task-detail/task-detail.component';
 
 const routes: Routes = [  
+  { path: '', redirectTo: '/', pathMatch: 'full' },
   {
     path: '', component: LoginLayoutComponent, children: [
       {path: '', component: AuthorizationComponent},

@@ -1,4 +1,5 @@
 import { FileUpload } from "./file";
+import { Order } from "./order";
 
 
 export interface Task {
@@ -7,7 +8,8 @@ export interface Task {
     description: string,
     dateOfCreate?: Date;
     dateDeadline? : Date,    
-    order: number,
+    orderOrder?: number,
+    orderName?: string,
     priority?: string,
     file? : FileUpload
         

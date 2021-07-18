@@ -5,11 +5,12 @@
   <div class="example-container" *ngFor='let column of columns'
   (click)='setPriority(column)'>
     <div class="headerOfBox">
-      <div class="header">
+      <div class="header">       
         <h2>{{column.priority.name}}</h2>
         <label [matMenuTriggerFor]="menu2" class="material-icons">more_vert</label>
         <mat-menu #menu2="matMenu">      
         <button mat-menu-item (click)='confirmOfdeleteColumn(column.priority._id)'>Delete</button>
+        <button mat-menu-item (click)='renameColumnFunc(column)'>Rename</button>
         </mat-menu>   
       </div>     
       <mat-form-field appearance="fill" class="sort">
@@ -27,15 +28,17 @@
     class="example-list  cdk-drag-animating"
     [id]='column.priority.name'    
     (cdkDropListDropped)="drop($event)">
-    <div class="example-box" *ngFor="let item of column.array" cdkDrag routerLink = "{{item._id}}">
-      <div class="content">
+    <div *ngIf='column.array.length === 0'>No tasks</div>
+    <div class="example-box" *ngFor="let item of column.array" cdkDrag routerLink = "{{item._id}}">      
+      <div class="content">        
         <div class="block">
           <div id="row1">
+            
           <div>{{item.name}}</div>
            
           </div> 
           <div id="row2">
-            <div>{{item.order}}</div> 
+            <div>{{item.orderName}}</div> 
             <div>{{item.dateDeadline | date}}</div>         
           </div>    
         </div>
@@ -47,9 +50,9 @@
       </div>     
     </div>
     </div>
-    <button mat-button (click)='column.showTask = !column.showTask; setPriority(column); getLastOrder()'>Add task</button>  
+    <button mat-button (click)='column.showTask = !column.showTask; setPriority(column)'>Add task</button>  
     <form class="form" action="" [ngClass]="{showTaskClass: column.showTask}">
-     <app-newtask [lastOrder]='lastOrder'
+     <app-newtask
      (onSave)="save($event); column.showTask = !column.showTask"
     ></app-newtask> 
     </form>

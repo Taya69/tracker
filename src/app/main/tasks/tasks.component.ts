@@ -6,13 +6,17 @@ import { FortasksService } from 'src/app/for-tasks.service';
 import { Priority } from 'src/interfaces/priority';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Task } from 'src/interfaces/task';
+import { MatBottomSheet, MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
+import { inject } from '@angular/core/testing';
+import { Order } from 'src/interfaces/order';
 
 interface ColumnsForTasks {
   priority: Priority,
   array: Task[],
   showTask: boolean,
   orders: String[],
-  selectOrder: String      
+  selectOrder: String,
+  rename: boolean      
 }
 interface DataForDialog {
   id : string,
@@ -25,22 +29,18 @@ interface DataForDialog {
   templateUrl: './tasks.component.html',
   styleUrls: ['./tasks.component.css']
 })
-export class TasksComponent implements OnInit { 
-  
+export class TasksComponent implements OnInit {   
   constructor(private taskService: FortasksService, public dialog: MatDialog, private cdr: ChangeDetectorRef,
-    private zone:NgZone) { } 
-  @ViewChild('inputForFile')
+    private _bottomSheet: MatBottomSheet) { } 
+
+  @ViewChild('inputForFile')  
   inputForFileRef!: ElementRef;
+
   task: any
   file!: File;
   imagePreview: any
-  priorities: Priority[] = [];  
-  low: Task[] = []
-  medium: Task[] = []
-  high: Task[] = []
-  customArray: Task[] = []
-  customPriority: string = ''  
-  testArray: Task[] = []
+  priorities: Priority[] = [];   
+  customPriority: string = ''   
   priority: string = ''
   currentArr: Task[] = []
   currentTask: any
@@ -48,9 +48,17 @@ export class TasksComponent implements OnInit {
   columns: ColumnsForTasks[] = [] 
   currentColumn: any 
   selectedOrder = 'by order'
-  lastOrder: number = 0
+  //lastOrder: number = 0
   loading: boolean = true
   numberOfColumns: number = 3
+  columnName: string = ''
+  success: boolean = true
+  orders: Order[] = []
+  openBottomSheet(result: string): void {
+    this._bottomSheet.open(BottomSheetOverviewExampleSheet, {
+      data: result
+    });
+  }
    changeSort (event: any,column: ColumnsForTasks) {     
     this.sortColumn(event.target.value) 
     column.selectOrder = event.target.value;   
@@ -66,10 +74,10 @@ export class TasksComponent implements OnInit {
         }          
         return 0;
       } else {
-        if (a.order > b.order) {
+        if (a.orderOrder! > b.orderOrder!) {
           return 1;
         }
-        if (a.order < b.order) {
+        if (a.orderOrder! < b.orderOrder!) {
           return -1;
         }          
         return 0;
@@ -81,7 +89,7 @@ export class TasksComponent implements OnInit {
       this.numberOfColumns = data.length    
     for (let i = 0; i < this.priorities.length; i++) {      
       this.taskService.getTasksByPriorities(this.priorities[i].name, this.selectedOrder).subscribe((data)=> {       
-        this.columns.push({priority: this.priorities[i], array: data, showTask : false, orders: this.sorts, selectOrder: this.selectedOrder})
+        this.columns.push({priority: this.priorities[i], array: data, showTask : false, orders: this.sorts, selectOrder: this.selectedOrder, rename: false})
         this.columns.sort(function(a, b) {      
           if (a.priority.order > b.priority.order) {
             return 1;
@@ -96,25 +104,22 @@ export class TasksComponent implements OnInit {
     } 
     this.loading = false;
   }  
-  )   
+  ) 
+   this.taskService.getOrders().subscribe(data => {this.orders = data; this.orders.forEach(element => {
+     
+   })
+  })
   }
-  getLastOrder () {
-   console.log(this.currentArr) 
-   const arr = this.currentArr;
-   arr.sort(function(a, b){
-     if (a.order > b.order) return 1
-     if (a.order < b.order) return 0
-     return 0
-   });
-   this.lastOrder = arr[arr.length-1].order
-  }
+ 
   addColumn () {    
-    const DialogRef = this.dialog.open(AddingOfColumn);    
+    const DialogRef = this.dialog.open(AddingOfColumn, {
+      data: 'adding'
+    });    
     DialogRef.afterClosed().subscribe((el) => { 
       this.taskService.getPriorities().subscribe((data) => {
         this.taskService.addPriority({name: el, custom: true, order: data[data.length-1].order+1}).subscribe((data)=> {
           this.priorities.push(data);
-          this.columns.push({priority: data, array: [], showTask: false, orders: this.sorts, selectOrder: this.selectedOrder})
+          this.columns.push({priority: data, array: [], showTask: false, orders: this.sorts, selectOrder: this.selectedOrder, rename: false})
         })
       })   
      
@@ -126,7 +131,10 @@ export class TasksComponent implements OnInit {
       transferArrayItem(event.previousContainer.data, event.container.data,
         event.previousIndex, event.currentIndex)    
         const idTask = Object(event.container.data[event.currentIndex])['_id']            
-        this.taskService.updateTask({priority : event.container.element.nativeElement.id}, idTask).subscribe()           
+        this.taskService.updateTask({priority : event.container.element.nativeElement.id}, idTask).subscribe((data)=>
+        {let result = data !== undefined ? 'success' : 'failed'
+        this.openBottomSheet(result)}
+      )           
         }          
     else {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
@@ -142,15 +150,16 @@ export class TasksComponent implements OnInit {
     return this.email.hasError('email') ? 'Not a valid email' : '';
   }
   
-  save (properties: any[]) {   
-    this.taskService.addTask({      
-      name: properties[0],
-      description: properties[1], 
-      order: properties[3],
-      dateDeadline: properties[2],     
-      priority: this.priority,
-      dateOfCreate: new Date()
-    }).subscribe((data) => {this.currentArr.push(data); this.sortColumn(this.currentColumn.selectOrder)})
+  save (properties: any[]) {          
+      this.taskService.addTask({      
+        name: properties[0],
+        description: properties[1], 
+        orderName: properties[3],
+        dateDeadline: properties[2],     
+        priority: this.priority,
+        dateOfCreate: new Date(),
+        orderOrder: Number(properties[4])
+      }).subscribe((data) => {this.currentArr.push(data); this.sortColumn(this.currentColumn.selectOrder)})   
   }
   setPriority (column: ColumnsForTasks) {    
     this.priority = column.priority.name; 
@@ -186,6 +195,34 @@ export class TasksComponent implements OnInit {
         this.columns.splice(index, 1);
       }
       })
+  }
+  renameColumnFunc(column: ColumnsForTasks) {
+    const oldName = column.priority.name
+    column.rename = !column.rename
+    const DialogRef = this.dialog.open(AddingOfColumn, {
+      data: {
+        editing: true,
+        name: column.priority.name
+      }
+    });    
+    DialogRef.afterClosed().subscribe((el) => { 
+    column.priority.name = el
+    const priorityForEdit = {
+      name: el
+    }
+    this.taskService.updatePriority(priorityForEdit, column.priority._id!).subscribe()
+    
+    this.taskService.getTasksByPriorities(oldName, 'by order').subscribe((data)=> {
+      data.forEach(element => {
+        this.taskService.updateTask({priority: el}, element._id!).subscribe((data)=> {
+          if (data !== undefined) {this.success = true}
+          else (this.success = false)
+        })
+      });
+    })
+     
+      })
+    this.taskService.getTasksByPriorities(this.customPriority, 'by order').subscribe()
   } 
 }
 
@@ -226,13 +263,32 @@ deleteColumn() {
   templateUrl: "tasksAddColumn.component.html",
   styleUrls: ['./tasks.component.css']
 })
-export class AddingOfColumn {
+export class AddingOfColumn implements OnInit{
 nameOfColumn: string = ''  
-constructor (@Inject(MAT_DIALOG_DATA) public data: string, public dialogRef3: MatDialogRef<ConfimationDialog>,
+constructor (@Inject(MAT_DIALOG_DATA) public data: any, public dialogRef3: MatDialogRef<ConfimationDialog>,
 private taskService: FortasksService) {}
-closeDialog () {
- // this.taskService.addPriority({name: this.nameOfColumn, custom: true, order: 3}).subscribe()
+ngOnInit() {
+  if(this.data.editing ) {    
+    this.nameOfColumn = this.data.name
+  }
+}
+closeDialog () { 
   this.dialogRef3.close(this.nameOfColumn)
 }
 }
 
+@Component({
+  selector: 'bottom-sheet-overview-example-sheet',
+  templateUrl: 'bottomSheet.component.html',
+})
+export class BottomSheetOverviewExampleSheet implements OnInit{
+  constructor(private _bottomSheetRef: MatBottomSheetRef<BottomSheetOverviewExampleSheet>,
+    @Inject(MAT_BOTTOM_SHEET_DATA) public data: any) {}
+ngOnInit() {  
+  setTimeout(()=> {this._bottomSheetRef.dismiss()}, 500)
+}
+  openLink(event: MouseEvent): void {
+    this._bottomSheetRef.dismiss();
+    event.preventDefault();    
+  }
+}

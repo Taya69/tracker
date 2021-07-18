@@ -16,7 +16,7 @@ import { LoginLayoutComponent } from './login/login-layout/login-layout.componen
 import { AuthorizationComponent, DialogDataExampleDialog } from './login/login-layout/authorization/authorization.component';
 import { DialogRegistration, RegistrationComponent } from './login/login-layout/registration/registration.component';
 import { LayoutsMainComponent } from './main/layouts/layouts.component';
-import { AddingOfColumn, ConfimationDialog, TasksComponent } from './main/tasks/tasks.component';
+import { AddingOfColumn, BottomSheetOverviewExampleSheet, ConfimationDialog, TasksComponent } from './main/tasks/tasks.component';
 import { OneOfTaskComponent } from './main/one-of-task/one-of-task.component';
 import { NewtaskComponent } from './main/tasks/newtask/newtask.component';
 import { TaskDetailComponent } from './main/task-detail/task-detail.component';
@@ -38,7 +38,8 @@ import { TaskDetailComponent } from './main/task-detail/task-detail.component';
    TaskDetailComponent,
    AddingOfColumn,
    DialogDataExampleDialog,
-   DialogRegistration
+   DialogRegistration,
+   BottomSheetOverviewExampleSheet
   ],
   imports: [
     BrowserModule,

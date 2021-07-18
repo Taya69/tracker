@@ -1,4 +1,4 @@
 export interface FileUpload {    
-    name: String,    
+    name: string,    
     src: string        
   }

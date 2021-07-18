@@ -4,6 +4,7 @@ import { from, Observable, of } from 'rxjs';
 import { catchError, find, map, tap } from 'rxjs/operators';
 import { Task } from 'src/interfaces/task';
 import { Priority } from 'src/interfaces/priority';
+import { Order } from 'src/interfaces/order';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +20,11 @@ export class FortasksService {
   addTask(task : Task) : Observable<Task>{    
     return this.http.post<Task>('api/tasks', task, this.httpOptions).pipe(         
       catchError(this.handleError<Task>('addPost'))
+    );    
+  }
+  getOrders() : Observable<Order[]>{    
+    return this.http.get<Order[]>('api/orders', this.httpOptions).pipe(         
+      catchError(this.handleError<Order[]>('getOrders'))
     );    
   }
   // addTask(task : Task, image? : File) : Observable<Task>{
@@ -63,17 +69,7 @@ export class FortasksService {
       catchError(this.handleError<Task>('deleteTask'))
     );
   }
-  updateTask(task: {}, id: string, files = false): Observable<any> {
-    // const fd = new FormData() 
-    //   if (image) {
-    //     fd.append('image', image, image.name)
-    //   }
-    //   for (let key of Object.keys(task)) {
-    //     fd.append(key, task[key])
-    //   } 
-      // fd.append('name', task.name);
-      // fd.append('description', task.description),
-      // fd.append('priority', task.priority!)       
+  updateTask(task: {}, id: string): Observable<any> {       
         return this.http.patch(`api/tasks/${id}`, task, this.httpOptions).pipe(         
           catchError(this.handleError<Task>('addingPost')) )
          
@@ -97,7 +93,7 @@ export class FortasksService {
     return this.http.get<Task[]>(`api/tasks?priority=${priority}&sort=${sort}`);
   }
   addFile(uploadFormData : FormData) {    
-   return this.http.post('api/tasks/upload', uploadFormData)    
+   return this.http.post('api/files', uploadFormData)    
   }
   getPriorities(): Observable<Priority[]> {    
     return this.http.get<Priority[]>(`api/priorities/`).pipe(      
@@ -117,5 +113,20 @@ export class FortasksService {
       catchError(this.handleError<Priority>(`getpriority id=${id}`))
     );
   } 
- 
+  async downloadFile(file: String) { 
+    const response = await fetch(`api/files?file=${file}`)  
+   return response
+}
+getOrderById(id: string): Observable<Order> {
+  const url = `api/orders/${id}`;
+  return this.http.get<Order>(url).pipe(      
+    catchError(this.handleError<Order>(`getOrder`))
+  );
+} 
+getOrderByName(name: string): number {
+ if (name === 'low') return 3
+ if (name === 'medium') return 2
+ if (name === 'high') return 1
+ return 3
+} 
 }

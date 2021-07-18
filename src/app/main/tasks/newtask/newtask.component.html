@@ -10,25 +10,23 @@
       <mat-error>
           Name is required
         </mat-error>
-    </mat-form-field>
-    <mat-form-field class="full-width" appearance="outline" class='order'>
-      <mat-label>Order</mat-label>
-      <input      
-        matInput
-        placeholder="Order of task"
-        [(ngModel)]='order'           
-      />
-      <mat-error>
-          Name is required
-        </mat-error>
-    </mat-form-field>
+    </mat-form-field>   
     <mat-form-field appearance="outline" class="deadline">
       <mat-label>Deadline</mat-label>
-      <input matInput [matDatepicker]="picker" [(ngModel)]='dateDeadline'
+      <input #deadline matInput [matDatepicker]="picker" [(ngModel)]='dateDeadline'
              (dateInput)="addEvent($event)" (dateChange)="addEvent($event)">
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>  
+  </div>
+  <div>
+    <mat-form-field appearance="fill" class="order">
+      <mat-label>Priority</mat-label>
+      <select matNativeControl (change)="changeOrder($event)">          
+        <option *ngFor="let order of orders" [value]="order.name"
+        >{{ order.name }}</option>
+      </select>
+    </mat-form-field>
   </div>
   <div>
     <mat-form-field class="full-width" appearance="outline" class="description">
@@ -45,5 +43,5 @@
     </mat-form-field>
   </div>
   <button mat-button (click)='save()'>Save</button>
-  <button mat-button (click)='setLastOrder()'>set last order</button>
+  
 </div>
