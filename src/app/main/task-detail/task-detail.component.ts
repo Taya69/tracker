@@ -50,8 +50,9 @@ export class TaskDetailComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.taskService.getOrders().subscribe(data => this.orders = data)
     this.getTask()
+    this.taskService.getOrders().subscribe(data => {console.log(data); this.orders = data})
+    
   }
   taskForm: FormGroup = this.fb.group({
     deadline: ['', [createPasswordStrengthValidator()]]  
@@ -67,7 +68,7 @@ export class TaskDetailComponent implements OnInit {
         this.order = this.task.orderName,
         this.priority = this.task.priority
         this.loading = false
-        console.log(task.file)
+        console.log(this.order)
       });    
   }
   goBack(): void {
@@ -107,17 +108,17 @@ export class TaskDetailComponent implements OnInit {
   saveChange () {
     if (!this.taskForm.valid) {console.log(1111); return}
     const orderOrder = this.taskService.getOrderByName(this.order)
+    
     this.taskService.updateTask({
        name : this.name,
        dateDeadline: this.dateOfDeadLine,
-       order: this.order,
+       orderName: this.order,
        description: this.description,
        orderOrder: orderOrder
       }, this.task._id
       ).subscribe()
   } 
-  async triggerDownload (file: string) {  
-    console.log(file)
+  async triggerDownload (file: string) {      
     const response = await this.taskService.downloadFile(file)
     if (response.status === 200) {
        const blob = await response.blob()
@@ -138,8 +139,10 @@ export class TaskDetailComponent implements OnInit {
     }
     this.taskService.updateTask({file: this.files}, this.id).subscribe()
   }
-  changeOrder (event: any) {            
-    this.order = event.target.value    
+  changeOrder (event: any) { 
+    //console.log(event.target.value)           
+    this.order = event.target.value 
+    console.log(this.order)   
 }
 }
 

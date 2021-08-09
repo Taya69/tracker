@@ -24,9 +24,9 @@
   <mat-grid-tile colspan='1'>
     <mat-form-field appearance="fill">
       <mat-label>Priority</mat-label>
-      <select matNativeControl (change)="changeOrder($event)">          
-        <option *ngFor="let order1 of orders" [value]="order1.name" [selected]='order'
-        >{{ order1.name }}</option>
+      <select matNativeControl (change)="changeOrder($event)" *ngIf='orders && order'>          
+        <option *ngFor="let item of orders" [value]="item.name" [selected]='order'
+        >{{ item.name }}</option>
       </select>
     </mat-form-field>
   </mat-grid-tile>
